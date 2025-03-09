@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Parking System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</head>
+<body>
+    <header>
+        <div id="clock"></div>
+    </header>
+
+    <main>
+        <h1 style="color: #2ecc71; text-decoration: underline dotted;
+      text-decoration-color: #e74c3c; ">Welcome To "KPRIET ParkEase"</h1>
+
+        <!-- User Details Section -->
+        <div id="user-details" class="card">
+            <h2>User Details</h2>
+            <form id="user-details-form">
+                <div class="input-group">
+                    <input type="text" id="user-name" required>
+                    <label for="user-name">Full Name</label>
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="user-phone" required>
+                    <label for="user-phone">Phone Number</label>
+                </div>
+                <div class="input-group">
+                    <select id="vehicle-type" required>
+                        <option value="" disabled selected>Select Vehicle Type</option>
+                        <option value="car">Car</option>
+                        <option value="bike">Bike</option>
+                        <option value="truck">Truck</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="vehicle-number" required>
+                    <label for="vehicle-number">Vehicle Number</label>
+                </div>
+                <div class="input-group">
+                    <textarea id="user-address" rows="3" required></textarea>
+                    <label for="user-address">Address</label>
+                </div>
+                <button type="submit" id="save-details">Save Details</button>
+            </form>
+        </div>
+
+        <!-- Booking Section -->
+        <div id="booking-section" class="card">
+            <h2>Book Your Slot</h2>
+            <form id="booking-form">
+                <div class="input-group">
+                    <input type="date" id="booking-date" required>
+                    <label for="booking-date">Booking Date</label>
+                </div>
+                <div class="input-group">
+                    <input type="time" id="start-time" required>
+                    <label for="start-time">Start Time</label>
+                </div>
+                <div class="input-group">
+                    <input type="time" id="end-time" required>
+                    <label for="end-time">End Time</label>
+                </div>
+                <div class="input-group">
+                    <input type="number" id="slot-number" min="1" max="50" placeholder="Choose Slot Number (1-50)" required>
+                    <label for="slot-number">Slot Number</label>
+                </div>
+                <!-- Error message container -->
+                <div id="date-time-error" class="error-message" style="display: none; color: red; margin-top: 10px;">
+                    You selected a wrong date or time. Please select carefully.
+                </div>
+                <button type="submit" id="book-btn">Book Slot</button>
+            </form>
+        </div>
+
+        <!-- Parking Status -->
+        <div id="parking-status" class="card">
+            <h2>Parking Status</h2>
+            <p>Available Slots: <span id="available-slots" class="slot-count">50</span></p>
+            <p>Booked Slots: <span id="booked-slots" class="slot-count">0</span></p>
+            <div class="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Parking Slots Grid -->
+        <div id="slot-grid" class="card">
+            <h2>Parking Slots</h2>
+            <div id="slots-container"></div>
+        </div>
+
+        <div id="booking-details" class="card" style="display: none;">
+            <h2>Booking Details</h2>
+            <p><strong>Token:</strong> <span id="booked-token"></span></p>
+            <p><strong>Name:</strong> <span id="booked-user-name"></span></p>
+            <p><strong>Vehicle Number:</strong> <span id="booked-vehicle-number"></span></p>
+            <p><strong>Slot Number:</strong> <span id="booked-slot-number"></span></p>
+            <p><strong>Date:</strong> <span id="booked-date"></span></p>
+            <p><strong>Start Time:</strong> <span id="booked-start-time"></span></p>
+            <p><strong>End Time:</strong> <span id="booked-end-time"></span></p>
+            <p id="countdown-time"></p>
+        </div>
+
+
+
+        <!-- Free Slots Section -->
+        <div id="free-section" class="card">
+            <h2>Free Slots</h2>
+            <form id="free-form">
+                <!-- Token Number -->
+                <div class="input-group">
+                    <input type="text" id="free-token" placeholder=" " required>
+                    <label for="free-token">Token Number</label>
+                </div>
+                <!-- Full Name -->
+                <div class="input-group">
+                    <input type="text" id="free-user-name" placeholder=" " required>
+                    <label for="free-user-name">Full Name</label>
+                </div>
+                <!-- Vehicle Number -->
+                <div class="input-group">
+                    <input type="text" id="free-vehicle-number" placeholder=" " required>
+                    <label for="free-vehicle-number">Vehicle Number</label>
+                </div>
+                <!-- Slot Number -->
+                <div class="input-group">
+                    <input type="number" id="free-slot-number" placeholder=" " required>
+                    <label for="free-slot-number">Slot Number</label>
+                </div>
+                <button type="submit">Free Slot</button>
+            </form>
+        </div>
+
+        <!-- Payment Section -->
+        <div id="payment-section" class="card hidden">
+            <h3>Payment</h3>
+            <p> <strong> (₹120 for one Hour )</strong>
+                <br>
+                Please scan the QR code to complete your payment
+                <br>
+                <strong>Extended parking, a small fee of Rs. 20 per 10 minutes will help ensure availability for others</strong>
+            </p>
+            <!-- Add your own QR code image -->
+            <img src="mahboob.png" alt="Payment QR Code" id="static-qr-code">
+            <button id="download-payment-qr">Download QR Code</button> <!-- Download button -->
+            <button onclick="closePaymentSection()">Close</button>
+        </div>
+
+        <!-- Admin Panel Toggle Button -->
+        <button id="admin-toggle-btn" class="admin-toggle">Admin Panel</button>
+
+        <!-- Password Prompt -->
+        <div id="password-prompt" class="modal">
+            <div class="modal-content">
+                <h3>Enter Admin Password</h3>
+                <input type="password" id="admin-password" placeholder="Password" required>
+                <button id="submit-password">Submit</button>
+                <p id="password-error" style="color: red; display: none;">Incorrect password!</p>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="admin-panel" class="card hidden">
+            <h2>Admin Panel</h2>
+            <div class="admin-actions">
+                <!-- Free Slot by Token -->
+                <div class="admin-action">
+                    <h3>Free Slot by Token</h3>
+                    <form id="admin-free-form">
+                        <div class="input-group">
+                            <input type="number" id="admin-free-token" placeholder="Enter Token" required>
+                            <label for="admin-free-token">Token</label>
+                        </div>
+                        <button type="submit">Free Slot</button>
+                    </form>
+                </div>
+
+                <!-- Book Slot for User -->
+                <div class="admin-action">
+                    <h3>Book Slot for User</h3>
+                    <form id="admin-book-form">
+                        <div class="input-group">
+                            <input type="text" id="admin-user-name" placeholder="Full Name" required>
+                            <label for="admin-user-name">Full Name</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" id="admin-user-phone" placeholder="Phone Number" required>
+                            <label for="admin-user-phone">Phone Number</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="admin-vehicle-number" placeholder="Vehicle Number" required>
+                            <label for="admin-vehicle-number">Vehicle Number</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="number" id="admin-slot-number" min="1" max="50" placeholder="Slot Number (1-50)" required>
+                            <label for="admin-slot-number">Slot Number</label>
+                        </div>
+                        <button type="submit">Book Slot</button>
+                    </form>
+                </div>
+
+                <!-- View Statistics -->
+                <div class="admin-action">
+                    <h3>View Statistics</h3>
+                    <button id="view-stats-btn">Show Statistics</button>
+                    <div id="stats-list"></div>
+                </div>
+
+                <!-- History Section -->
+                <div class="admin-action">
+                    <h3>Booking History</h3>
+                    <button id="view-history-btn">View History</button>
+                    <div id="history-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirm-modal" class="modal">
+            <div class="modal-content">
+                <p>Are you sure you want to free this booking?</p>
+                <button id="confirm-yes">Yes</button>
+                <button id="confirm-no">No</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
